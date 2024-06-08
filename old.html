@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        #test-container {
+            background: white;
+            height: 90%;
+            width: 95%;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        #result-container {
+            background: red;
+            height: 50%;
+            width: 50%;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .question-block {
+            display: none;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div id="test-container">
+        <h1>Student Test</h1>
+        <div id="questions"></div>
+        <div class="nav-buttons">
+            <button id="prev-question" onclick="prevQuestion()" disabled>Previous</button>
+            <button id="next-question" onclick="nextQuestion()">Next</button>
+        </div>
+        <button id="submit-test" onclick="submitTest()">Submit Test</button>
+    </div>
+    <div id="result-container" style="display:none;">
+        <h1>Test Result</h1>
+        <h3>Don't refresh the page! or quit the page!</h3>
+        <p id="result"></p>
+    </div>
+    <script>
+        let currentQuestionIndex = 0;
+        let testLocked = false;
+        const questions = [
+            { question: "What is 2 + 2?", answers: [3, 4, 5], correct: 4 },
+            { question: "What is the capital of France?", answers: ["Paris", "Rome", "London"], correct: "Paris" },
+            { question: "What is the square root of 16?", answers: [2, 4, 8], correct: 4 },
+            // Add 47 more questions here
+            { question: "Example question 4?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 5?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 6?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 7?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 8?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 9?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 10?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 11?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 12?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 13?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 14?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 15?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 16?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 17?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 18?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 19?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 20?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 21?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 22?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 23?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 24?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 25?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 26?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 27?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 28?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 29?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 30?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 31?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 32?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 33?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 34?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 35?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 36?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 37?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 38?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 39?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 40?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 41?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 42?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 43?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 44?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 45?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 46?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 47?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 48?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 49?", answers: [1, 2, 3], correct: 1 },
+            { question: "Example question 50?", answers: [1, 2, 3], correct: 1 },
+        ];
+
+        function renderQuestions() {
+            let questionsDiv = document.getElementById('questions');
+            questions.forEach((q, index) => {
+                let questionBlock = document.createElement('div');
+                questionBlock.className = 'question-block';
+                questionBlock.id = `question${index}`;
+                questionBlock.innerHTML = `
+                    <p>${q.question}</p>
+                    ${q.answers.map(answer => `<label><input type="radio" name="question${index}" value="${answer}"> ${answer}</label>`).join('<br>')}
+                `;
+                questionsDiv.appendChild(questionBlock);
+            });
+            showQuestion(currentQuestionIndex);
+        }
+
+        function showQuestion(index) {
+            let questions = document.querySelectorAll('.question-block');
+            questions.forEach((q, i) => {
+                q.style.display = i === index ? 'block' : 'none';
+            });
+            document.getElementById('prev-question').disabled = index === 0;
+            document.getElementById('next-question').disabled = index === questions.length - 1;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion(currentQuestionIndex);
+            }
+        }
+
+        function submitTest() {
+            if (testLocked || localStorage.getItem('testLocked') === 'true') {
+                alert("You cannot submit the test more than once.");
+                return;
+            }
+
+            let score = 0;
+            questions.forEach((q, index) => {
+                let selectedAnswer = document.querySelector(`input[name="question${index}"]:checked`);
+                if (selectedAnswer && selectedAnswer.value == q.correct) {
+                    score++;
+                }
+            });
+
+            testLocked = true;
+            localStorage.setItem('testLocked', 'true');
+            localStorage.setItem('testScore', score);
+            document.getElementById('test-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'block';
+            document.getElementById('result').innerText = `Your score: ${score} / ${questions.length}`;
+        }
+
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                alert("You navigated away from the test. Your test is now locked and your score is zero.");
+                testLocked = true;
+                localStorage.setItem('testLocked', 'true');
+                localStorage.setItem('testScore', 0);
+                document.getElementById('submit-test').disabled = true;
+                questions.forEach((q, index) => {
+                    document.querySelector(`input[name="question${index}"]`).disabled = true;
+                });
+                document.getElementById('result').innerText = 'Your test is locked. Score: 0 / 50';
+            }
+        }
+
+        function checkTestStatus() {
+            if (localStorage.getItem('testLocked') === 'true') {
+                let score = localStorage.getItem('testScore');
+                document.getElementById('test-container').style.display = 'none';
+                document.getElementById('result-container').style.display = 'block';
+                document.getElementById('result').innerText = `Your score: ${score} / ${questions.length}`;
+                testLocked = true;
+            }
+        }
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.onload = function() {
+            checkTestStatus();
+            renderQuestions();
+        };
+    </script>
+</body>
+</html>
